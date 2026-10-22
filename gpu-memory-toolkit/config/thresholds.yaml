@@ -1,0 +1,49 @@
+# thresholds.yaml
+# ============================================================
+# Configurable thresholds for the GPU Memory Profiling Toolkit.
+# These are starter heuristics — calibrate using your benchmark results.
+# ============================================================
+
+# ── Global Memory ─────────────────────────────────────────────
+# sector_ratio = sectors / requests
+# Ideal ratio = 1.0 (every request served by exactly 1 sector)
+# >1 means threads in a warp are not accessing contiguous memory.
+global_access:
+  # sector ratio to trigger a LOW warning
+  warning_ratio: 2.0
+  # sector ratio to trigger a HIGH alert
+  critical_ratio: 4.0
+
+# ── Shared Memory Bank Conflicts ──────────────────────────────
+# bank_conflicts = total conflict count from NCU metric
+# (l1tex__data_bank_conflicts_pipe_lsu_mem_shared_op_ld/st.sum)
+shared_memory:
+  # total conflicts per kernel invocation
+  warning_conflict:  100
+  critical_conflict: 1000
+
+# ── Register Spilling / Local Memory ─────────────────────────
+# Primary signal: ptxas "stack frame bytes" (runtime-indexed local arrays)
+# Secondary signal: ptxas "spill stores/loads bytes" (register pressure spills)
+# Both mean local memory traffic = off-chip DRAM reads/writes per thread.
+register_spill:
+  # Any local memory at all is at least a LOW warning
+  warning_stack_bytes:    1      # any stack frame triggers warning
+  critical_stack_bytes:   512    # large stack frame triggers HIGH
+
+  # Explicit spill stores/loads (from register pressure)
+  warning_spill_bytes:    1
+  critical_spill_bytes:   256
+
+  # NCU local memory sectors (if available)
+  warning_local_sectors:  100
+  critical_local_sectors: 10000
+
+# ── Severity mapping ──────────────────────────────────────────
+# LOW:    Static suspicion or weak runtime evidence
+# MEDIUM: Runtime profiler provides meaningful supporting evidence
+# HIGH:   Profiler confirms issue with substantial performance impact
+severity_levels:
+  - LOW
+  - MEDIUM
+  - HIGH

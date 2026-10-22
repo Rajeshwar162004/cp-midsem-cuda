@@ -1,0 +1,28 @@
+# CUDA build artifacts
+*.o
+*.out
+*.a
+*.so
+*.cubin
+*.fatbin
+*.ptx
+*.ncu-rep
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+*.egg-info/
+
+# Results / profiling output (large binary/data files)
+gpu-memory-toolkit/results/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
